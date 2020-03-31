@@ -4,7 +4,7 @@
 # Authors: Haotian Pang, Han Liu and Robert Vanderbei                           #
 # Emails: <hpang@princeton.edu>, <hanliu@princeton.edu> and <rvdb@princetonedu> #
 # Date: April 22th 2016                                                           #
-# Version: 1.4.1						                                        #
+# Version: 1.4.2						                                        #
 #-------------------------------------------------------------------------------#
 
 paralp <- function(obj, mat, rhs, obj_bar, rhs_bar, lambda=0){
