@@ -49,7 +49,7 @@ paralp <- function(obj, mat, rhs, obj_bar, rhs_bar, lambda=0){
     }
 
     else if(status ==2){
-       cat("The problem is unbounded! \n")
+       cat("The problem is unbounded... \n")
     }
 
  }

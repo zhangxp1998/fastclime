@@ -16,7 +16,6 @@
 #include "macros.h"
 
 
-#define EPS1 1.0e-8
 #define EPS2 1.0e-12
 #define EPS3 1.0e-5
 #define MAX_ITER 1000000
@@ -31,7 +30,8 @@ int ratio_test0(
 	int    ndy,
 	double *y, 
         double *ybar,
-	double mu
+	double mu,
+	double eps1
 );
 
 
@@ -43,12 +43,13 @@ void solver20(
     int *ka, 		/* array of indices into ia and a */
     double *a,		/* array of nonzeros in the constraint matrix */
     double *b, 		/* right-hand side */
-    double *c          /* objective coefficients */
+    double *c,          /* objective coefficients */
+	double eps1
     );
 
 
 
-void fastlp(double *obj, double *mat, double *rhs, int *m0 , int *n0, double *opt, int *status, double *lambda)
+void fastlp(double *obj, double *mat, double *rhs, int *m0 , int *n0, double *opt, int *status, double *lambda, const double *eps1)
 {
 
     int m=*m0;		/* number of constraints */
@@ -111,7 +112,7 @@ void fastlp(double *obj, double *mat, double *rhs, int *m0 , int *n0, double *op
 	    }
     }
     ka[n]=k;
-    solver20(m,n,nz,ia,ka,a,b,c);
+    solver20(m,n,nz,ia,ka,a,b,c, *eps1);
     *status=status0;
 
     for(i=0;i<n;i++){
@@ -135,7 +136,8 @@ void solver20(
     int *ka, 		/* array of indices into ia and a */
     double *a,		/* array of nonzeros in the constraint matrix */
     double *b, 		/* right-hand side */
-    double *c          /* objective coefficients */
+    double *c,          /* objective coefficients */
+	double eps1
     )
 {
 
@@ -274,7 +276,7 @@ void solver20(
 	Nt_times_y( N, at, iat, kat, basicflag, vec, ivec, nvec, 
 		     dy_N, idy_N, &ndy_N );
 
-	col_in = ratio_test0( dy_N, idy_N, ndy_N, y_N, ybar_N,mu );
+	col_in = ratio_test0( dy_N, idy_N, ndy_N, y_N, ybar_N,mu, eps1);
 
         /*************************************************************
 	* STEP 3: Ratio test to find entering column                 * 
@@ -322,7 +324,7 @@ void solver20(
 	* STEP 3: Ratio test to find leaving column                  * 
         *************************************************************/
 
-	col_out = ratio_test0( dx_B, idx_B, ndx_B, x_B, xbar_B, mu );
+	col_out = ratio_test0( dx_B, idx_B, ndx_B, x_B, xbar_B, mu, eps1);
 
 	if (col_out == -1) {	/* UNBOUNDED */
 	    status0 = 2;
@@ -477,14 +479,15 @@ int ratio_test0(
 	int    ndy,
 	double *y, 
 	double *ybar, 
-	double mu
+	double mu,
+	double eps1
 )
 {
 	int j, jj = -1, k;
 	double min = HUGE_VAL;
 
 	for (k=0; k<ndy; k++) {
-	    if ( dy[k] > EPS1 ) {
+	    if ( dy[k] > eps1) {
 	        j = idy[k];
 		if ( (y[j] + mu*ybar[j])/dy[k] < min ) {
 			min = (y[j] + mu*ybar[j])/dy[k];

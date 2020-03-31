@@ -7,7 +7,7 @@
 # Version: 1.4.1					                                            #
 #-------------------------------------------------------------------------------#
 
-fastlp <- function(obj, mat, rhs,lambda=0){
+fastlp <- function(obj, mat, rhs,lambda=0, eps1=1e-10){
 
  m<-length(rhs)
  n<-length(obj)
@@ -24,7 +24,7 @@ fastlp <- function(obj, mat, rhs,lambda=0){
  }
 
  if (error==0){
-    str=.C("fastlp", as.double(obj), as.double(t(mat)), as.double(rhs), as.integer(m0), as.integer(n0), as.double(opt), as.integer(status), as.double(lambda), PACKAGE="fastclime")
+    str=.C("fastlp", as.double(obj), as.double(t(mat)), as.double(rhs), as.integer(m0), as.integer(n0), as.double(opt), as.integer(status), as.double(lambda), as.double(eps1), PACKAGE="fastclime")
 
 
     opt<-unlist(str[6])
@@ -40,7 +40,7 @@ fastlp <- function(obj, mat, rhs,lambda=0){
     }
 
     else if(status ==2){
-       cat("The problem is unbounded! \n")
+       cat("The problem is unbounded... \n")
     }
 
  }
